@@ -10,7 +10,7 @@ module.exports = {
 };
 
 function run(options, callback) {
-  const { kaistId, kaistPassword } = options;
+  const { id, password } = options;
   let { size } = options;
   if (!size) {
     size = 10;
@@ -20,8 +20,8 @@ function run(options, callback) {
       .url('https://iam.kaist.ac.kr/iamps/mobileLogin.do')
       .waitForExist('#id')
       .waitForExist('#password')
-      .setValue('#id', kaistId)
-      .setValue('#password', kaistPassword)
+      .setValue('#id', id)
+      .setValue('#password', password)
       .click('.marg_bt22>a')
       .url('https://portal.kaist.ac.kr/index.html')
       .url(`https://portal.kaist.ac.kr/board/list.brd?boardId=today_notice&pageSize=${size}`)
