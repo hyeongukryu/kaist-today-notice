@@ -1,0 +1,24 @@
+{
+  "name": "kaist-today-notice",
+  "version": "1.0.0",
+  "description": "KAIST 오늘의 공지사항",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mintrupt/kaist-today-notice.git"
+  },
+  "author": "류형욱",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mintrupt/kaist-today-notice/issues"
+  },
+  "homepage": "https://github.com/mintrupt/kaist-today-notice#readme",
+  "dependencies": {
+    "jsdom": "^11.0.0",
+    "phantomjs-prebuilt": "^2.1.14",
+    "webdriverio": "^4.8.0"
+  }
+}
