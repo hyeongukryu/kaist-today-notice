@@ -17,8 +17,8 @@
   },
   "homepage": "https://github.com/mintrupt/kaist-today-notice#readme",
   "dependencies": {
-    "jsdom": "^11.0.0",
-    "phantomjs-prebuilt": "^2.1.14",
-    "webdriverio": "^4.8.0"
+    "jsdom": "^13.0.0",
+    "phantomjs-prebuilt": "^2.1.16",
+    "webdriverio": "^4.14.0"
   }
 }
