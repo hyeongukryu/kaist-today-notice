@@ -1,46 +1,39 @@
-const phantomjs = require('phantomjs-prebuilt');
-const webdriverio = require('webdriverio');
-const jsdom = require('jsdom');
-const { JSDOM } = jsdom;
-
-const wdOpts = { desiredCapabilities: { browserName: 'phantomjs' } }
+const puppeteer = require('puppeteer');
 
 module.exports = {
-  run,
+    run,
 };
 
 function run(options, callback) {
-  const { id, password } = options;
-  let { size } = options;
-  if (!size) {
-    size = 10;
-  }
-  phantomjs.run('--webdriver=4444').then(program => {
-    webdriverio.remote(wdOpts).init()
-      .url('https://iam.kaist.ac.kr/iamps/mobileLogin.do')
-      .waitForExist('#id')
-      .waitForExist('#password')
-      .setValue('#id', id)
-      .setValue('#password', password)
-      .click('.marg_bt22>a')
-      .url('https://portal.kaist.ac.kr/index.html')
-      .url(`https://portal.kaist.ac.kr/board/list.brd?boardId=today_notice&pageSize=${size}`)
-      .getHTML('html').then(html => {
-        processNoticePage(html, callback);
-        program.kill();
-      });
-  });
-}
-
-function processNoticePage(html, callback) {
-  const { document } = new JSDOM(html).window;
-  const elements = document.querySelectorAll('.req_tit>a');
-  const notices = [];
-  elements.forEach(e => {
-    notices.push({
-      title: e.text.trim(),
-      link: 'https://portal.kaist.ac.kr' + e.href,
-    });
-  });
-  callback(null, notices);
+    const { id, password } = options;
+    let { size } = options;
+    if (!size) {
+        size = 10;
+    }
+    (async () => {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.goto('https://iam.kaist.ac.kr/iamps/mobileLogin.do');
+        await page.waitForSelector('#id');
+        await page.waitForSelector('#password');
+        await page.type('#id', id);
+        await page.type('#password', password);
+        await page.click('.marg_bt22>a');
+        await page.waitForSelector('.user_info');
+        await page.goto('https://portal.kaist.ac.kr/index.html');
+        await page.goto(`https://portal.kaist.ac.kr/board/list.brd?boardId=today_notice&pageSize=${size}`);
+        const notices = await page.evaluate(() => {
+            const elements = document.querySelectorAll('.req_tit>a');
+            const notices = [];
+            elements.forEach(e => {
+                notices.push({
+                    title: e.text.trim(),
+                    link: 'https://portal.kaist.ac.kr' + e.href,
+                });
+            });
+            return notices;
+        });
+        await browser.close();
+        callback(null, notices);
+    })();
 }
