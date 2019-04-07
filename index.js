@@ -30,7 +30,7 @@ function run(options, callback) {
                 elements.forEach(e => {
                     notices.push({
                         title: e.text.trim(),
-                        link: 'https://portal.kaist.ac.kr' + e.href,
+                        link: e.href,
                     });
                 });
                 return notices;
