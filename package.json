@@ -1,10 +1,11 @@
 {
   "name": "kaist-today-notice",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "KAIST 오늘의 공지사항",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,9 @@
   },
   "homepage": "https://github.com/hyeongukryu/kaist-today-notice#readme",
   "dependencies": {
-    "puppeteer": "^1.14.0"
+    "puppeteer": "^1.16.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0"
   }
 }

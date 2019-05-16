@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 
 module.exports = {
     run,
@@ -13,7 +14,15 @@ function run(options, callback) {
     (async () => {
         let browser = null;
         try {
-            browser = await puppeteer.launch();
+            const DockerPuppeteerLaunchOptions = {
+                executablePath: '/usr/bin/chromium-browser',
+                args: ['--disable-dev-shm-usage'],
+            };
+            if (fs.existsSync(DockerPuppeteerLaunchOptions.executablePath)) {
+                browser = await puppeteer.launch(DockerPuppeteerLaunchOptions);
+            } else {
+                browser = await puppeteer.launch();
+            }
             const page = await browser.newPage();
             await page.goto('https://iam.kaist.ac.kr/iamps/mobileLogin.do');
             await page.waitForSelector('#id');
