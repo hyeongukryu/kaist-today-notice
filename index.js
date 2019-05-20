@@ -32,7 +32,9 @@ function run(options, callback) {
             await page.click('.marg_bt22>a');
             await page.waitForSelector('.user_info');
             await page.goto('https://portal.kaist.ac.kr/index.html');
+            await page.waitForSelector('.ptl_search');
             await page.goto(`https://portal.kaist.ac.kr/board/list.brd?boardId=today_notice&pageSize=${size}`);
+            await page.waitForSelector('.req_btn_wrap');
             const notices = await page.evaluate(() => {
                 const elements = document.querySelectorAll('.req_tit>a');
                 const notices = [];
