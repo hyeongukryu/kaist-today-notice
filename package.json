@@ -1,6 +1,6 @@
 {
   "name": "kaist-today-notice",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "KAIST 오늘의 공지사항",
   "main": "index.js",
   "scripts": {
@@ -21,6 +21,6 @@
     "puppeteer": "^1.16.0"
   },
   "devDependencies": {
-    "eslint": "^5.16.0"
+    "eslint": "^6.0.1"
   }
 }
