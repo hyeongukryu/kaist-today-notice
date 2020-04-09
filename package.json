@@ -1,6 +1,6 @@
 {
   "name": "kaist-today-notice",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "KAIST 오늘의 공지사항",
   "main": "index.js",
   "scripts": {
@@ -18,9 +18,9 @@
   },
   "homepage": "https://github.com/hyeongukryu/kaist-today-notice#readme",
   "dependencies": {
-    "puppeteer": "^1.16.0"
+    "puppeteer": "^2.1.1"
   },
   "devDependencies": {
-    "eslint": "^6.2.2"
+    "eslint": "^6.8.0"
   }
 }
