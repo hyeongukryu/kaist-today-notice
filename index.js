@@ -20,6 +20,7 @@ function run(options, callback) {
                     '--disable-dev-shm-usage',
                     '--lang=ko-KR',
                     '--headless',
+                    '--no-sandbox',
                     '--disable-gpu',
                     '--single-process',
                     '--no-zygote',

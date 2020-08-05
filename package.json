@@ -1,6 +1,6 @@
 {
   "name": "kaist-today-notice",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "KAIST 오늘의 공지사항",
   "main": "index.js",
   "scripts": {
