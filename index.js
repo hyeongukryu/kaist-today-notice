@@ -1,12 +1,11 @@
 const puppeteer = require('puppeteer');
-const fs = require('fs');
 
 module.exports = {
     run,
 };
 
 function run(options, callback) {
-    const { id, password } = options;
+    const { id, password, puppeteerLaunchOptions } = options;
     let { size } = options;
     if (!size) {
         size = 10;
@@ -14,23 +13,7 @@ function run(options, callback) {
     (async () => {
         let browser = null;
         try {
-            const DockerPuppeteerLaunchOptions = {
-                executablePath: '/usr/bin/chromium-browser',
-                args: [
-                    '--disable-dev-shm-usage',
-                    '--lang=ko-KR',
-                    '--headless',
-                    '--no-sandbox',
-                    '--disable-gpu',
-                    '--single-process',
-                    '--no-zygote',
-                ],
-            };
-            if (fs.existsSync(DockerPuppeteerLaunchOptions.executablePath)) {
-                browser = await puppeteer.launch(DockerPuppeteerLaunchOptions);
-            } else {
-                browser = await puppeteer.launch();
-            }
+            browser = await puppeteer.launch(puppeteerLaunchOptions);
             const page = await browser.newPage();
             await page.goto('https://iam2.kaist.ac.kr/#/userLogin');
             await page.waitForSelector('input[type=text]');
