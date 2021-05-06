@@ -1,18 +1,18 @@
 import puppeteer from 'puppeteer';
 
-type PuppeteerLaunchOptions = puppeteer.LaunchOptions & puppeteer.BrowserLaunchArgumentOptions & puppeteer.BrowserConnectOptions & {
+export type PuppeteerLaunchOptions = puppeteer.LaunchOptions & puppeteer.BrowserLaunchArgumentOptions & puppeteer.BrowserConnectOptions & {
     product?: puppeteer.Product;
     extraPrefsFirefox?: Record<string, unknown>;
 };
 
-interface KaistTodayNoticeRunOptions {
+export interface KaistTodayNoticeRunOptions {
     id: string;
     password: string;
     size?: number;
     puppeteerLaunchOptions?: PuppeteerLaunchOptions;
 }
 
-interface KaistTodayNotice {
+export interface KaistTodayNotice {
     title: string;
     link: string;
     organization: string;
