@@ -8,24 +8,43 @@ KAIST 오늘의 공지사항
 npm install kaist-today-notice
 ```
 
-```JavaScript
-const ktn = require('kaist-today-notice');
+```TypeScript
+import run from 'kaist-today-notice';
 
-ktn.run({
-  id: 'ID',                   // required         
-  password: 'PASSWORD',       // required
-  size: 10,                   // optional
-  puppeteerLaunchOptions: {}  // optional
-}, (err, result) => {
-  console.log(result);
-});
+async function main() {
+    try {
+        const notices = await run({
+            id: 'ID',                   // required         
+            password: 'PASSWORD',       // required
+            size: 10,                   // optional
+            puppeteerLaunchOptions: {}  // optional
+        });
+        console.log(notices);
+    } catch (e) {
+        console.error(e);
+    }
+}
+main();
 ```
 
-```JavaScript
+```TypeScript
+interface KaistTodayNotice {
+    title: string;
+    link: string;
+    organization: string;
+    author: string;
+    views: number;
+    date: string;
+}
+
 [
   {
     title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
     link: 'https://portal.kaist.ac.kr/ennotice/lorem_ipsum/42',
+    organization: '전산학부',
+    author: '넙죽이',
+    views: 42,
+    date: '1971-02-16',
   },
   // ...more results
 ]

@@ -1,11 +1,14 @@
 {
   "name": "kaist-today-notice",
-  "version": "3.2.0",
+  "version": "4.0.0",
   "description": "KAIST 오늘의 공지사항",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ."
+    "fix": "eslint --fix *.ts .eslintrc.js",
+    "build": "tsc",
+    "prepublish": "tsc"
   },
   "repository": {
     "type": "git",
@@ -18,9 +21,12 @@
   },
   "homepage": "https://github.com/hyeongukryu/kaist-today-notice#readme",
   "dependencies": {
-    "puppeteer": "^9.0.0"
+    "puppeteer": "^9.1.1"
   },
   "devDependencies": {
-    "eslint": "^7.25.0"
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "eslint": "^7.25.0",
+    "eslint-config-airbnb-base": "^14.2.1"
   }
 }
