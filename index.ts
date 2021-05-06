@@ -1,10 +1,15 @@
 import puppeteer from 'puppeteer';
 
+type PuppeteerLaunchOptions = puppeteer.LaunchOptions & puppeteer.BrowserLaunchArgumentOptions & puppeteer.BrowserConnectOptions & {
+    product?: puppeteer.Product;
+    extraPrefsFirefox?: Record<string, unknown>;
+};
+
 interface KaistTodayNoticeRunOptions {
     id: string;
     password: string;
     size?: number;
-    puppeteerLaunchOptions?: puppeteer.LaunchOptions;
+    puppeteerLaunchOptions?: PuppeteerLaunchOptions;
 }
 
 interface KaistTodayNotice {
