@@ -1,9 +1,12 @@
-import puppeteer from 'puppeteer';
+import puppeteer, {
+    BrowserConnectOptions, BrowserLaunchArgumentOptions, LaunchOptions, Product,
+} from 'puppeteer';
 
-export type PuppeteerLaunchOptions = puppeteer.LaunchOptions & puppeteer.BrowserLaunchArgumentOptions & puppeteer.BrowserConnectOptions & {
-    product?: puppeteer.Product;
-    extraPrefsFirefox?: Record<string, unknown>;
-};
+export type PuppeteerLaunchOptions =
+    LaunchOptions & BrowserLaunchArgumentOptions & BrowserConnectOptions & {
+        product?: Product;
+        extraPrefsFirefox?: Record<string, unknown>;
+    };
 
 export interface KaistTodayNoticeRunOptions {
     id: string;
@@ -26,7 +29,9 @@ function normalizeDate(date: string): string {
     return `${digits.substr(0, 4)}-${digits.substr(4, 2)}-${digits.substr(6, 2)}`;
 }
 
-export default async function run(options: KaistTodayNoticeRunOptions) {
+export default async function run(
+    options: KaistTodayNoticeRunOptions,
+): Promise<KaistTodayNotice[] | null> {
     const { id, password, puppeteerLaunchOptions } = options;
     const size = options.size ?? 10;
 
@@ -73,9 +78,10 @@ export default async function run(options: KaistTodayNoticeRunOptions) {
             });
             return notices;
         });
-        await browser.close();
-        result?.forEach(notice => notice.date = normalizeDate(notice.date));
-        return result;
+        return result?.map((notice) => ({
+            ...notice,
+            date: normalizeDate(notice.date),
+        })) ?? null;
     } finally {
         if (browser) {
             await browser.close();
