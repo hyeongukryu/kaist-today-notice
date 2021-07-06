@@ -43,8 +43,12 @@ export default async function run(
         await page.waitForSelector('input[type=text]');
         await page.waitForSelector('input[type=password]');
         await page.type('input[type=text]', id);
+        await page.waitForSelector('input[type=submit]');
+        const loginMethods = await page.$$<HTMLInputElement>('input[type=submit]');
+        await loginMethods[1].click();
         await page.type('input[type=password]', password);
-        await page.click('input[type=submit]');
+        await page.waitForSelector('.loginbtn');
+        await page.click('.loginbtn');
         await page.waitForSelector('.navbar-nav');
         await page.goto('https://portal.kaist.ac.kr/index.html');
         await page.waitForSelector('.ptl_search');
