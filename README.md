@@ -17,7 +17,8 @@ async function main() {
             id: 'ID',                   // required         
             password: 'PASSWORD',       // required
             size: 10,                   // optional
-            puppeteerLaunchOptions: {}  // optional
+            puppeteerLaunchOptions: {}, // optional
+            lang: 'ko'                  // optional
         });
         console.log(notices);
     } catch (e) {
