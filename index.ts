@@ -13,6 +13,7 @@ export interface KaistTodayNoticeRunOptions {
     password: string;
     size?: number;
     puppeteerLaunchOptions?: PuppeteerLaunchOptions;
+    lang?: 'ko' | 'en';
 }
 
 export interface KaistTodayNotice {
@@ -32,7 +33,7 @@ function normalizeDate(date: string): string {
 export default async function run(
     options: KaistTodayNoticeRunOptions,
 ): Promise<KaistTodayNotice[] | null> {
-    const { id, password, puppeteerLaunchOptions } = options;
+    const { id, password, puppeteerLaunchOptions, lang } = options;
     const size = options.size ?? 10;
 
     let browser = null;
@@ -50,6 +51,13 @@ export default async function run(
         await page.waitForSelector('.loginbtn');
         await page.click('.loginbtn');
         await page.waitForSelector('.navbar-nav');
+
+        await page.goto('https://portal.kaist.ac.kr/index.html');
+        await page.waitForSelector('.ptl_search');
+        if (lang) {
+            await page.goto(`https://portal.kaist.ac.kr/lang/changeLang.face?langKnd=${lang}`);
+            await page.waitForSelector('.ptl_search');
+        }
         await page.goto('https://portal.kaist.ac.kr/index.html');
         await page.waitForSelector('.ptl_search');
         await page.goto(`https://portal.kaist.ac.kr/board/list.brd?boardId=today_notice&pageSize=${size}`);
