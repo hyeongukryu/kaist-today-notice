@@ -18,7 +18,8 @@ async function main() {
             password: 'PASSWORD',          // required
             otpSecret: 'BASE32GOTPSECRET', // required
             size: 10,                      // optional
-            puppeteerLaunchOptions: {}     // optional
+            puppeteerLaunchOptions: {},    // optional
+            lang: 'ko'                     // optional
         });
         console.log(notices);
     } catch (e) {
