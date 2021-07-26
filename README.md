@@ -14,10 +14,11 @@ import run from 'kaist-today-notice';
 async function main() {
     try {
         const notices = await run({
-            id: 'ID',                   // required         
-            password: 'PASSWORD',       // required
-            size: 10,                   // optional
-            puppeteerLaunchOptions: {}  // optional
+            id: 'ID',                      // required         
+            password: 'PASSWORD',          // required
+            otpSecret: 'BASE32GOTPSECRET', // required
+            size: 10,                      // optional
+            puppeteerLaunchOptions: {}     // optional
         });
         console.log(notices);
     } catch (e) {

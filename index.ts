@@ -2,6 +2,8 @@ import puppeteer, {
     BrowserConnectOptions, BrowserLaunchArgumentOptions, LaunchOptions, Product,
 } from 'puppeteer';
 
+import { authenticator } from 'otplib';
+
 export type PuppeteerLaunchOptions =
     LaunchOptions & BrowserLaunchArgumentOptions & BrowserConnectOptions & {
         product?: Product;
@@ -11,9 +13,21 @@ export type PuppeteerLaunchOptions =
 export interface KaistTodayNoticeRunOptions {
     id: string;
     password: string;
+    otpSecret: string;
     size?: number;
     puppeteerLaunchOptions?: PuppeteerLaunchOptions;
     lang?: 'ko' | 'en';
+}
+
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function getOtp(secret: string): Promise<string> {
+    while (authenticator.timeRemaining() < 5) {
+        await sleep(7500);
+    }
+    return authenticator.generate(secret);
 }
 
 export interface KaistTodayNotice {
@@ -33,7 +47,7 @@ function normalizeDate(date: string): string {
 export default async function run(
     options: KaistTodayNoticeRunOptions,
 ): Promise<KaistTodayNotice[] | null> {
-    const { id, password, puppeteerLaunchOptions, lang } = options;
+    const { id, password, puppeteerLaunchOptions, lang, otpSecret } = options;
     const size = options.size ?? 10;
 
     let browser = null;
@@ -50,8 +64,15 @@ export default async function run(
         await page.type('input[type=password]', password);
         await page.waitForSelector('.loginbtn');
         await page.click('.loginbtn');
-        await page.waitForSelector('.navbar-nav');
 
+        await page.waitForSelector('input[id=google]');
+        await page.click('input[id=google]');
+        await page.waitForSelector('.pass > input[type=password]');
+        await page.type('.pass > input[type=password]', await getOtp(otpSecret));
+        await page.waitForSelector('.log > input[type=submit]');
+        await page.click('.log > input[type=submit]');
+
+        await page.waitForSelector('.navbar-nav');
         await page.goto('https://portal.kaist.ac.kr/index.html');
         await page.waitForSelector('.ptl_search');
         if (lang) {
