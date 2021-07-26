@@ -1,6 +1,6 @@
 {
   "name": "kaist-today-notice",
-  "version": "4.1.2",
+  "version": "5.0.0",
   "description": "KAIST 오늘의 공지사항",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,12 +21,13 @@
   },
   "homepage": "https://github.com/hyeongukryu/kaist-today-notice#readme",
   "dependencies": {
+    "otplib": "^12.0.1",
     "puppeteer": "^10.1.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.28.2",
-    "@typescript-eslint/parser": "^4.28.2",
-    "eslint": "^7.30.0",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
     "eslint-config-airbnb-base": "^14.2.1"
   }
 }
