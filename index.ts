@@ -20,11 +20,12 @@ export interface KaistTodayNoticeRunOptions {
 }
 
 function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => { setTimeout(resolve, ms); });
 }
 
 async function getOtp(secret: string): Promise<string> {
     while (authenticator.timeRemaining() < 5) {
+        // eslint-disable-next-line no-await-in-loop
         await sleep(7500);
     }
     return authenticator.generate(secret);
@@ -47,7 +48,9 @@ function normalizeDate(date: string): string {
 export default async function run(
     options: KaistTodayNoticeRunOptions,
 ): Promise<KaistTodayNotice[] | null> {
-    const { id, password, puppeteerLaunchOptions, lang, otpSecret } = options;
+    const {
+        id, password, puppeteerLaunchOptions, lang, otpSecret,
+    } = options;
     const size = options.size ?? 10;
 
     let browser = null;
