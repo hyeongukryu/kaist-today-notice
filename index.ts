@@ -2,8 +2,6 @@ import puppeteer, {
     BrowserConnectOptions, BrowserLaunchArgumentOptions, LaunchOptions, Product,
 } from 'puppeteer';
 
-import { authenticator } from 'otplib';
-
 export type PuppeteerLaunchOptions =
     LaunchOptions & BrowserLaunchArgumentOptions & BrowserConnectOptions & {
         product?: Product;
@@ -13,22 +11,10 @@ export type PuppeteerLaunchOptions =
 export interface KaistTodayNoticeRunOptions {
     id: string;
     password: string;
-    otpSecret: string;
+    generateOtp: () => Promise<string>;
     size?: number;
     puppeteerLaunchOptions?: PuppeteerLaunchOptions;
     lang?: 'ko' | 'en';
-}
-
-function sleep(ms: number) {
-    return new Promise((resolve) => { setTimeout(resolve, ms); });
-}
-
-async function getOtp(secret: string): Promise<string> {
-    while (authenticator.timeRemaining() < 5) {
-        // eslint-disable-next-line no-await-in-loop
-        await sleep(7500);
-    }
-    return authenticator.generate(secret);
 }
 
 export interface KaistTodayNotice {
@@ -42,14 +28,14 @@ export interface KaistTodayNotice {
 
 function normalizeDate(date: string): string {
     const digits = date.replaceAll('.', '');
-    return `${digits.substr(0, 4)}-${digits.substr(4, 2)}-${digits.substr(6, 2)}`;
+    return `${digits.substring(0, 4)}-${digits.substring(4, 6)}-${digits.substring(6, 8)}`;
 }
 
 export default async function run(
     options: KaistTodayNoticeRunOptions,
 ): Promise<KaistTodayNotice[] | null> {
     const {
-        id, password, puppeteerLaunchOptions, lang, otpSecret,
+        id, password, puppeteerLaunchOptions, lang, generateOtp,
     } = options;
     const size = options.size ?? 10;
 
@@ -68,10 +54,10 @@ export default async function run(
         await page.waitForSelector('.loginbtn');
         await page.click('.loginbtn');
 
-        await page.waitForSelector('input[id=google]');
-        await page.click('input[id=google]');
+        await page.waitForSelector('input[id=motp]');
+        await page.click('input[id=motp]');
         await page.waitForSelector('.pass > input[type=password]');
-        await page.type('.pass > input[type=password]', await getOtp(otpSecret));
+        await page.type('.pass > input[type=password]', await generateOtp());
         await page.waitForSelector('.log > input[type=submit]');
         await page.click('.log > input[type=submit]');
 
