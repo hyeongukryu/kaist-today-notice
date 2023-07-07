@@ -182,6 +182,7 @@ export async function loginToPortal() {
 }
 
 export async function getKaistCookie(options: GetKaistCookieRunOptions): Promise<CookieJar> {
+    await cookieJar.removeAllCookies();
     const { userId, password, generateOtp } = options;
     const serverPublicKey = await getPublicKey();
     const publicKey = pki.publicKeyFromPem(`-----BEGIN PUBLIC KEY-----\n${serverPublicKey}\n-----END PUBLIC KEY-----`);

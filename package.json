@@ -1,6 +1,6 @@
 {
   "name": "kaist-today-notice",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "description": "KAIST 오늘의 공지사항",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
