@@ -1,19 +1,13 @@
-import puppeteer, {
-    BrowserConnectOptions, BrowserLaunchArgumentOptions, LaunchOptions, Product,
-} from 'puppeteer';
-
-export type PuppeteerLaunchOptions =
-    LaunchOptions & BrowserLaunchArgumentOptions & BrowserConnectOptions & {
-        product?: Product;
-        extraPrefsFirefox?: Record<string, unknown>;
-    };
+import axios from 'axios';
+import { wrapper } from 'axios-cookiejar-support';
+import { JSDOM } from 'jsdom';
+import { getKaistCookie } from './auth';
 
 export interface KaistTodayNoticeRunOptions {
     id: string;
     password: string;
     generateOtp: () => Promise<string>;
     size?: number;
-    puppeteerLaunchOptions?: PuppeteerLaunchOptions;
     lang?: 'ko' | 'en';
 }
 
@@ -31,82 +25,65 @@ function normalizeDate(date: string): string {
     return `${digits.substring(0, 4)}-${digits.substring(4, 6)}-${digits.substring(6, 8)}`;
 }
 
+function extractNotices(html: string): KaistTodayNotice[] | null {
+    const dom = new JSDOM(html);
+    const { document } = dom.window;
+
+    const table = document.querySelector<HTMLTableElement>('.req_tbl_01');
+    if (table === null) {
+        return null;
+    }
+    const rows = table.querySelectorAll<HTMLTableRowElement>('tr');
+
+    const notices: KaistTodayNotice[] = [];
+    rows.forEach((row) => {
+        const a = row.querySelector<HTMLAnchorElement>('.req_tit>a');
+        const meta = row.querySelectorAll<HTMLLabelElement>('.ellipsis');
+        if (a === null) {
+            return;
+        }
+        if (meta.length !== 4) {
+            return;
+        }
+        notices.push({
+            title: a.text.trim(),
+            link: new URL(a.href, 'https://portal.kaist.ac.kr/').href,
+            organization: (meta[0].textContent ?? '').trim(),
+            author: (meta[1].textContent ?? '').trim(),
+            views: Number((meta[2].textContent ?? '').trim()),
+            date: normalizeDate((meta[3].textContent ?? '').trim()),
+        });
+    });
+
+    return notices;
+}
+
 export default async function run(
     options: KaistTodayNoticeRunOptions,
 ): Promise<KaistTodayNotice[] | null> {
     const {
-        id, password, puppeteerLaunchOptions, lang, generateOtp,
+        id, password, lang, generateOtp,
     } = options;
     const size = options.size ?? 10;
 
-    let browser = null;
-    try {
-        browser = await puppeteer.launch(puppeteerLaunchOptions);
-        const page = await browser.newPage();
-        await page.goto('https://iam2.kaist.ac.kr/#/userLogin');
-        await page.waitForSelector('input[type=text]');
-        await page.waitForSelector('input[type=password]');
-        await page.type('input[type=text]', id);
-        await page.waitForSelector('input[type=submit]');
-        const loginMethods = await page.$$('input[type=submit]');
-        await loginMethods[1].click();
-        await page.type('input[type=password]', password);
-        await page.waitForSelector('.loginbtn');
-        await page.click('.loginbtn');
+    const cookie = await getKaistCookie({
+        userId: id,
+        password,
+        generateOtp,
+    });
 
-        await page.waitForSelector('input[id=motp]');
-        await page.click('input[id=motp]');
-        await page.waitForSelector('.pass > input[type=password]');
-        await page.type('.pass > input[type=password]', await generateOtp());
-        await page.waitForSelector('.log > input[type=submit]');
-        await page.click('.log > input[type=submit]');
+    const http = axios.create();
+    http.defaults.jar = cookie;
+    http.defaults.withCredentials = true;
+    wrapper(http);
 
-        await page.waitForSelector('.navbar-nav');
-        await page.goto('https://portal.kaist.ac.kr/index.html');
-        await page.waitForSelector('.ptl_search');
-        if (lang) {
-            await page.goto(`https://portal.kaist.ac.kr/lang/changeLang.face?langKnd=${lang}`);
-            await page.waitForSelector('.ptl_search');
-        }
-        await page.goto('https://portal.kaist.ac.kr/index.html');
-        await page.waitForSelector('.ptl_search');
-        await page.goto(`https://portal.kaist.ac.kr/board/list.brd?boardId=today_notice&pageSize=${size}`);
-        await page.waitForSelector('.req_btn_wrap');
-        await page.waitForSelector('.req_tbl_01');
-        const result = await page.evaluate(() => {
-            const table = document.querySelector<HTMLTableElement>('.req_tbl_01');
-            if (table === null) {
-                return null;
-            }
-            const rows = table.querySelectorAll<HTMLTableRowElement>('tr');
-            const notices: KaistTodayNotice[] = [];
-            rows.forEach((row) => {
-                const a = row.querySelector<HTMLAnchorElement>('.req_tit>a');
-                const meta = row.querySelectorAll<HTMLLabelElement>('.ellipsis');
-                if (a === null) {
-                    return;
-                }
-                if (meta.length !== 4) {
-                    return;
-                }
-                notices.push({
-                    title: a.text.trim(),
-                    link: a.href,
-                    organization: meta[0].innerText.trim(),
-                    author: meta[1].innerText.trim(),
-                    views: Number(meta[2].innerText.trim()),
-                    date: meta[3].innerText.trim(),
-                });
-            });
-            return notices;
-        });
-        return result?.map((notice) => ({
-            ...notice,
-            date: normalizeDate(notice.date),
-        })) ?? null;
-    } finally {
-        if (browser) {
-            await browser.close();
-        }
+    await http.get('https://portal.kaist.ac.kr/index.html');
+    if (lang) {
+        await http.get(`https://portal.kaist.ac.kr/lang/changeLang.face?langKnd=${lang}`);
     }
+
+    const boardPage = await http.get<string>(`https://portal.kaist.ac.kr/board/list.brd?boardId=today_notice&pageSize=${size}`);
+    const html = boardPage.data;
+    const notices = extractNotices(html);
+    return notices;
 }

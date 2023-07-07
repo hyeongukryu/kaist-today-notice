@@ -1,7 +1,7 @@
 module.exports = {
     env: {
         browser: true,
-        es2020: true,
+        es2022: true,
     },
     extends: [
         'airbnb-base',
@@ -12,7 +12,7 @@ module.exports = {
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
-        ecmaVersion: 11,
+        ecmaVersion: 2022,
         sourceType: 'module',
     },
     plugins: [
@@ -20,5 +20,12 @@ module.exports = {
     ],
     rules: {
         indent: ['error', 4],
+        'import/extensions': [
+            'error',
+            'ignorePackages',
+            {
+                ts: 'never',
+            },
+        ],
     },
 };
