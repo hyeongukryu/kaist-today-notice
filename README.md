@@ -18,7 +18,6 @@ async function main() {
             password: 'PASSWORD',               // required
             generateOtp: () => Promise<string>, // required
             size: 10,                           // optional
-            puppeteerLaunchOptions: {},         // optional
             lang: 'ko'                          // optional
         });
         console.log(notices);
