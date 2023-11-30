@@ -1,9 +1,13 @@
 {
   "name": "kaist-today-notice",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "description": "KAIST 오늘의 공지사항",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./auth": "./dist/auth.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "fix": "eslint --fix *.ts .eslintrc.js",
@@ -21,22 +25,22 @@
   },
   "homepage": "https://github.com/hyeongukryu/kaist-today-notice#readme",
   "dependencies": {
-    "@types/jsdom": "^21.1.1",
-    "axios": "^1.4.0",
+    "@types/jsdom": "^21.1.6",
+    "axios": "^1.6.2",
     "axios-cookiejar-support": "^4.0.7",
-    "jsdom": "^22.1.0",
+    "jsdom": "^23.0.0",
     "node-forge": "^1.3.1",
     "tough-cookie": "^4.1.3",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
-    "@types/node": "^20.4.0",
-    "@types/node-forge": "^1.3.2",
-    "@types/tough-cookie": "^4.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.61.0",
-    "@typescript-eslint/parser": "^5.61.0",
-    "eslint": "^8.44.0",
+    "@types/node": "^20.10.1",
+    "@types/node-forge": "^1.3.10",
+    "@types/tough-cookie": "^4.0.5",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "eslint": "^8.54.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.3.2"
   }
 }
