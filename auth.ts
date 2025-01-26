@@ -111,11 +111,13 @@ export async function login(
     username: string,
     password: string,
     getOtp: () => Promise<string>,
+    onBeforeOtp: () => Promise<void> = async () => { },
 ): Promise<string> {
     await cookieJar.removeAllCookies();
 
     await loginUsingPassword(username, password);
     await secondFactorPage();
+    await onBeforeOtp();
     await selectEmailOtp();
     const otp = await getOtp();
     await submitOtp(otp);
@@ -129,6 +131,7 @@ export async function loginWithRetry(
     username: string,
     password: string,
     getOtp: () => Promise<string>,
+    onBeforeOtp: () => Promise<void> = async () => { },
 ): ReturnType<typeof login> {
     const backoffSeconds = [15, 30, 30, 60, 60];
     const getJitter = () => Math.random() * 15;
@@ -136,7 +139,7 @@ export async function loginWithRetry(
     for (; ;) {
         try {
             // eslint-disable-next-line no-await-in-loop
-            return await login(username, password, getOtp);
+            return await login(username, password, getOtp, onBeforeOtp);
         } catch (e) {
             if (backoffSeconds.length === 0) {
                 throw e;
