@@ -107,12 +107,12 @@ async function loginToPortal(ssoCode: string) {
     }
 }
 
-export async function login(
+export async function getCookies(
     username: string,
     password: string,
     getOtp: () => Promise<string>,
     onBeforeOtp: () => Promise<void> = async () => { },
-): Promise<string> {
+): Promise<CookieJar> {
     await cookieJar.removeAllCookies();
 
     await loginUsingPassword(username, password);
@@ -124,22 +124,22 @@ export async function login(
     const ssoCode = await completeLogin();
     await loginToPortal(ssoCode);
 
-    return cookieJar.getCookieStringSync('https://portal.kaist.ac.kr');
+    return cookieJar;
 }
 
-export async function loginWithRetry(
+export async function getCookiesWithRetry(
     username: string,
     password: string,
     getOtp: () => Promise<string>,
     onBeforeOtp: () => Promise<void> = async () => { },
-): ReturnType<typeof login> {
+): ReturnType<typeof getCookies> {
     const backoffSeconds = [15, 30, 30, 60, 60];
     const getJitter = () => Math.random() * 15;
 
     for (; ;) {
         try {
             // eslint-disable-next-line no-await-in-loop
-            return await login(username, password, getOtp, onBeforeOtp);
+            return await getCookies(username, password, getOtp, onBeforeOtp);
         } catch (e) {
             if (backoffSeconds.length === 0) {
                 throw e;
@@ -149,4 +149,24 @@ export async function loginWithRetry(
             await new Promise((resolve) => { setTimeout(resolve, delay * 1000); });
         }
     }
+}
+
+export async function login(
+    username: string,
+    password: string,
+    getOtp: () => Promise<string>,
+    onBeforeOtp: () => Promise<void> = async () => { },
+): Promise<string> {
+    const cookies = await getCookies(username, password, getOtp, onBeforeOtp);
+    return cookies.getCookieStringSync('https://portal.kaist.ac.kr');
+}
+
+export async function loginWithRetry(
+    username: string,
+    password: string,
+    getOtp: () => Promise<string>,
+    onBeforeOtp: () => Promise<void> = async () => { },
+): ReturnType<typeof login> {
+    const cookies = await getCookiesWithRetry(username, password, getOtp, onBeforeOtp);
+    return cookies.getCookieStringSync('https://portal.kaist.ac.kr');
 }
