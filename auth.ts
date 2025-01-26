@@ -107,8 +107,11 @@ async function loginToPortal(ssoCode: string) {
     }
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export async function login(username: string, password: string, getOtp: () => Promise<string>) {
+export async function login(
+    username: string,
+    password: string,
+    getOtp: () => Promise<string>,
+): Promise<string> {
     await cookieJar.removeAllCookies();
 
     await loginUsingPassword(username, password);
@@ -120,4 +123,27 @@ export async function login(username: string, password: string, getOtp: () => Pr
     await loginToPortal(ssoCode);
 
     return cookieJar.getCookieStringSync('https://portal.kaist.ac.kr');
+}
+
+export async function loginWithRetry(
+    username: string,
+    password: string,
+    getOtp: () => Promise<string>,
+): ReturnType<typeof login> {
+    const backoffSeconds = [15, 30, 30, 60, 60];
+    const getJitter = () => Math.random() * 15;
+
+    for (; ;) {
+        try {
+            // eslint-disable-next-line no-await-in-loop
+            return await login(username, password, getOtp);
+        } catch (e) {
+            if (backoffSeconds.length === 0) {
+                throw e;
+            }
+            const delay = backoffSeconds.shift()! + getJitter();
+            // eslint-disable-next-line no-await-in-loop
+            await new Promise((resolve) => { setTimeout(resolve, delay * 1000); });
+        }
+    }
 }

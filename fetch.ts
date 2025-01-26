@@ -1,5 +1,6 @@
 export interface KaistTodayNoticeFetchOptions {
     cookie: string;
+    menuNo?: number;
     size?: number;
     lang?: 'ko' | 'en';
 }
@@ -39,6 +40,7 @@ export async function fetchPosts(
 ): Promise<KaistTodayNotice[] | null> {
     const size = options.size ?? 10;
     const lang = options.lang ?? 'ko';
+    const menuNo = options.menuNo ?? 0;
 
     const boards = await getBoards(options.cookie);
     const getBoard = (boardId: number) => boards.find((board) => board.boardId === boardId);
@@ -46,6 +48,7 @@ export async function fetchPosts(
     const url = new URL('/wz/api/board/recents', 'https://portal.kaist.ac.kr/');
     url.searchParams.append('recordCountPerPage', size.toString());
     url.searchParams.append('lang', lang);
+    url.searchParams.append('menuNo', menuNo.toString());
 
     const response = await fetch(
         url,
