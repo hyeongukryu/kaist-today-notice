@@ -23,17 +23,15 @@ export interface KaistBoard {
 async function getBoards(cookie: string): Promise<KaistBoard[]> {
     const response = await fetch(
         'https://portal.kaist.ac.kr/wz/api/widget/tabBoard/divide',
-        { "headers": { cookie }, }
+        { headers: { cookie } },
     );
     const json = await response.json();
     const { boardAll } = json.data;
-    return boardAll.map((board: any) => {
-        return {
-            boardId: board.boardNo,
-            menuId: board.menuNo,
-            menuPath: board.menuPath,
-        };
-    });
+    return boardAll.map((board: any) => ({
+        boardId: board.boardNo,
+        menuId: board.menuNo,
+        menuPath: board.menuPath,
+    }));
 }
 
 export async function fetchPosts(
@@ -49,14 +47,17 @@ export async function fetchPosts(
     url.searchParams.append('recordCountPerPage', size.toString());
     url.searchParams.append('lang', lang);
 
-    const response = await fetch(url,
-        { "headers": { cookie: options.cookie } }
+    const response = await fetch(
+        url,
+        { headers: { cookie: options.cookie } },
     );
     const json = await response.json();
     const { data } = json;
 
     const posts: KaistTodayNotice[] = [];
-    for (const post of data) {
+    for (let i = 0; i < data.length; i += 1) {
+        const post = data[i];
+
         const title = post.pstTtl ?? '';
         const organization = post.pstWrtrDeptNm ?? '';
         const author = post.pstWrtrNm ?? '';
@@ -68,13 +69,13 @@ export async function fetchPosts(
             throw new Error('Invalid boardNo');
         }
         const postPath = `${board.menuPath}#${post.pstNo}`;
-        const url = new URL(postPath, 'https://portal.kaist.ac.kr/');
+        const postUrl = new URL(postPath, 'https://portal.kaist.ac.kr/');
         const loginUrl = new URL('https://portal.kaist.ac.kr/common/login/login.do');
         loginUrl.searchParams.append('returnUrl', postPath);
 
         posts.push({
             title,
-            url: url.toString(),
+            url: postUrl.toString(),
             loginUrl: loginUrl.toString(),
             organization,
             author,

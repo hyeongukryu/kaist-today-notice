@@ -1,6 +1,6 @@
 {
   "name": "kaist-today-notice",
-  "version": "7.0.4",
+  "version": "8.0.0",
   "description": "KAIST 오늘의 공지사항",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -28,19 +28,17 @@
     "axios": "^1.7.9",
     "axios-cookiejar-support": "^5.0.5",
     "jsdom": "^26.0.0",
-    "node-forge": "^1.3.1",
+    "kisa-seed": "^1.0.1",
     "tough-cookie": "^5.1.0"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.10.10",
-    "@types/node-forge": "^1.3.11",
     "@types/tough-cookie": "^4.0.5",
-    "eslint": "^8",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
+    "eslint": "^8",
     "eslint-config-airbnb-base": "^15.0.0",
-    "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   }
 }
