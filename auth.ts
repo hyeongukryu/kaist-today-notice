@@ -107,6 +107,7 @@ async function loginToPortal(ssoCode: string) {
     }
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export async function login(username: string, password: string, getOtp: () => Promise<string>) {
     await cookieJar.removeAllCookies();
 
