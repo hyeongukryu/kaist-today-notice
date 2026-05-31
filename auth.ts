@@ -7,11 +7,12 @@ import { encrypt, KaistKey } from './crypto';
 const cookieStore = new MemoryCookieStore();
 const cookieJar = new CookieJar(cookieStore);
 
-const http = axios.create();
-http.defaults.baseURL = 'https://sso.kaist.ac.kr/';
-http.defaults.withCredentials = true;
-http.defaults.jar = cookieJar;
-wrapper(http);
+const axiosDefaults = {
+    baseURL: 'https://sso.kaist.ac.kr/',
+    withCredentials: true,
+    jar: cookieJar,
+};
+const http = wrapper(axios.create(axiosDefaults));
 
 async function getKey(): Promise<KaistKey> {
     const formData = new URLSearchParams();
@@ -138,14 +139,12 @@ export async function getCookiesWithRetry(
 
     for (; ;) {
         try {
-            // eslint-disable-next-line no-await-in-loop
             return await getCookies(username, password, getOtp, onBeforeOtp);
         } catch (e) {
             if (backoffSeconds.length === 0) {
                 throw e;
             }
             const delay = backoffSeconds.shift()! + getJitter();
-            // eslint-disable-next-line no-await-in-loop
             await new Promise((resolve) => { setTimeout(resolve, delay * 1000); });
         }
     }

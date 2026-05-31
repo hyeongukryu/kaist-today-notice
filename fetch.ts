@@ -21,14 +21,36 @@ export interface KaistBoard {
     menuPath: string;
 }
 
+interface RemoteKaistBoard {
+    data: {
+        boardAll: {
+            boardNo: number;
+            menuNo: number;
+            menuPath: string;
+        }[];
+    };
+}
+
+interface RemoteKaistTodayNotice {
+    data: {
+        boardNo: number;
+        pstNo: number | string;
+        pstTtl?: string;
+        pstWrtrDeptNm?: string;
+        pstWrtrNm?: string;
+        inqCnt?: number;
+        regDt?: string;
+    }[];
+}
+
 async function getBoards(cookie: string): Promise<KaistBoard[]> {
     const response = await fetch(
         'https://portal.kaist.ac.kr/wz/api/widget/tabBoard/divide',
         { headers: { cookie } },
     );
-    const json = await response.json();
+    const json = await response.json() as RemoteKaistBoard;
     const { boardAll } = json.data;
-    return boardAll.map((board: any) => ({
+    return boardAll.map((board) => ({
         boardId: board.boardNo,
         menuId: board.menuNo,
         menuPath: board.menuPath,
@@ -54,7 +76,7 @@ export async function fetchPosts(
         url,
         { headers: { cookie: options.cookie } },
     );
-    const json = await response.json();
+    const json = await response.json() as RemoteKaistTodayNotice;
     const { data } = json;
 
     const posts: KaistTodayNotice[] = [];
