@@ -1,18 +1,19 @@
 import axios from 'axios';
 import { CookieJar, MemoryCookieStore } from 'tough-cookie';
-import { wrapper } from 'axios-cookiejar-support';
+import { HttpCookieAgent, HttpsCookieAgent } from 'http-cookie-agent/http';
 import { JSDOM } from 'jsdom';
 import { encrypt, KaistKey } from './crypto';
 
 const cookieStore = new MemoryCookieStore();
 const cookieJar = new CookieJar(cookieStore);
 
-const axiosDefaults = {
+const http = axios.create({
     baseURL: 'https://sso.kaist.ac.kr/',
+    adapter: 'http',
     withCredentials: true,
-    jar: cookieJar,
-};
-const http = wrapper(axios.create(axiosDefaults));
+    httpAgent: new HttpCookieAgent({ cookies: { jar: cookieJar } }),
+    httpsAgent: new HttpsCookieAgent({ cookies: { jar: cookieJar } }),
+});
 
 async function getKey(): Promise<KaistKey> {
     const formData = new URLSearchParams();
